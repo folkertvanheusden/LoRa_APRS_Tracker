@@ -62,6 +62,9 @@ static void toggle_display() {
 void setup() {
   Serial.begin(115200);
 
+  pinMode(2, OUTPUT);
+  digitalWrite(2, HIGH);
+
 #ifdef TTGO_T_Beam_V1_0
   Wire.begin(SDA, SCL);
   if (!powerManagement.begin(Wire)) {
@@ -108,6 +111,7 @@ void setup() {
   logPrintlnI("Smart Beacon is " + getSmartBeaconState());
   show_display("INFO", "Smart Beacon is " + getSmartBeaconState(), 1000);
   logPrintlnI("setup done...");
+  digitalWrite(2, LOW);
   delay(500);
 }
 
@@ -217,6 +221,8 @@ void loop() {
   }
 
   if (send_update && gps_loc_update) {
+    digitalWrite(2, HIGH);
+
     send_update = false;
 
     nextBeaconTimeStamp = now() + (BeaconMan.getCurrentBeaconConfig()->smart_beacon.active ? BeaconMan.getCurrentBeaconConfig()->smart_beacon.slow_rate : (BeaconMan.getCurrentBeaconConfig()->timeout * SECS_PER_MIN));
@@ -321,6 +327,8 @@ void loop() {
       delay(Config.ptt.end_delay);
       digitalWrite(Config.ptt.io_pin, Config.ptt.reverse ? HIGH : LOW);
     }
+
+    digitalWrite(2, LOW);
   }
 
   if (gps_time_update) {
